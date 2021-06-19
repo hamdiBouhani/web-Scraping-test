@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (RestServer) VisitUrls(ctx *gin.Context) {
+func (s *RestServer) VisitUrls(ctx *gin.Context) {
 
 	var domain dto.Domain
 	if err := ctx.ShouldBind(&domain); err != nil {
@@ -15,7 +15,7 @@ func (RestServer) VisitUrls(ctx *gin.Context) {
 		return
 	}
 
-	data := pkg.Crawl(domain.URL)
+	data := pkg.Crawl(s.Log,domain.URL)
 
 	ResponseData(ctx, data)
 

@@ -1,16 +1,15 @@
 package pkg
 
 import (
-	"fmt"
-	"strings"
 	"time"
 	"web-Scraping-test/dto"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly"
+	"github.com/sirupsen/logrus"
 )
 
-func Crawl(url string) *dto.DomainResponce {
+func Crawl(Log *logrus.Logger, url string) *dto.DomainResponce {
 
 	res := dto.NewDomainResponce()
 	c := colly.NewCollector()
@@ -22,6 +21,14 @@ func Crawl(url string) *dto.DomainResponce {
 
 	c.OnHTML("title", func(e *colly.HTMLElement) {
 		res.PageTitle = e.Text
+	})
+
+	//input[type=password]
+	c.OnHTML("input[type] ", func(e *colly.HTMLElement) {
+		typeProperty := e.Attr("type")
+		if typeProperty == "password" {
+			res.ContainsLoginForm = true
+		}
 	})
 
 	c.OnHTML("h1", func(e *colly.HTMLElement) {
@@ -78,29 +85,18 @@ func Crawl(url string) *dto.DomainResponce {
 		})
 	})
 
-	c.OnHTML("body", func(e *colly.HTMLElement) {
-		// Goquery selection of the HTMLElement is in e.DOM
-		goquerySelection := e.DOM
-		formTags := goquerySelection.Find("button")
+	// Find and visit all links
+	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
+		e.Request.Visit(e.Attr("href"))
+	})
 
-		formTags.Each(func(_ int, s *goquery.Selection) {
-			content := formTags.Text()
-			nameProperty, _ := s.Attr("name")
+	c.OnRequest(func(r *colly.Request) {
+		Log.Println("Visiting", r.URL)
+	})
 
-			if strings.EqualFold(strings.ToLower(content), "sign in") ||
-				strings.EqualFold(strings.ToLower(content), "signin") ||
-				strings.EqualFold(strings.ToLower(content), "sign up") ||
-				strings.EqualFold(strings.ToLower(content), "signup") ||
-				strings.EqualFold(strings.ToLower(nameProperty), "sign in") ||
-				strings.EqualFold(strings.ToLower(nameProperty), "signin") ||
-				strings.EqualFold(strings.ToLower(nameProperty), "sign up") ||
-				strings.EqualFold(strings.ToLower(nameProperty), "signup") {
-				fmt.Printf("*** \n")
-				res.ContainsLoginForm = true
-			}
-
-		})
-
+	c.OnError(func(_ *colly.Response, err error) {
+		Log.Errorln("Something went wrong:", err)
+		res.InaccessibleLinksAmount++
 	})
 
 	c.Visit(url)
