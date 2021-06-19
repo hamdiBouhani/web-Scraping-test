@@ -12,23 +12,23 @@ import (
 	cors "github.com/rs/cors/wrapper/gin"
 )
 
-type Server struct {
+type RestServer struct {
 	Log *logrus.Logger
 	c   *configs.Config
 }
 
-func NewServer(c *configs.Config) (*Server, error) {
+func NewServer(c *configs.Config) (*RestServer, error) {
 
 	logger := logrus.New()
 	logger.SetLevel(logrus.InfoLevel)
 
-	return &Server{
+	return &RestServer{
 		Log: logger,
 		c:   c,
 	}, nil
 }
 
-func (s *Server) Run() error {
+func (s *RestServer) Run() error {
 	r := gin.Default()
 
 	r.Use(cors.New(cors.Options{
@@ -45,6 +45,11 @@ func (s *Server) Run() error {
 		openAccessed.GET("/ping", func(c *gin.Context) {
 			c.JSON(200, gin.H{"ping": "pong"})
 		})
+	}
+
+	apis := r.Group("/apis")
+	{
+		apis.POST("/visit_urls", s.VisitUrls)
 	}
 
 	err := r.Run(s.c.HostPort)
