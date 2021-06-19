@@ -1,9 +1,12 @@
 package pkg
 
 import (
+	"fmt"
+	"strings"
 	"time"
 	"web-Scraping-test/dto"
 
+	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly"
 )
 
@@ -52,6 +55,51 @@ func Crawl(url string) *dto.DomainResponce {
 			res.PageInfo.Links[link]++
 			res.ExternalAndInternalLinksAmount++
 		}
+	})
+
+	c.OnHTML("div", func(e *colly.HTMLElement) {
+		e.DOM.Find("h1").Each(func(i int, s *goquery.Selection) {
+			res.Headings["h1"]++
+		})
+		e.DOM.Find("h2").Each(func(i int, s *goquery.Selection) {
+			res.Headings["h2"]++
+		})
+		e.DOM.Find("h3").Each(func(i int, s *goquery.Selection) {
+			res.Headings["h3"]++
+		})
+		e.DOM.Find("h4").Each(func(i int, s *goquery.Selection) {
+			res.Headings["h4"]++
+		})
+		e.DOM.Find("h5").Each(func(i int, s *goquery.Selection) {
+			res.Headings["h5"]++
+		})
+		e.DOM.Find("h6").Each(func(i int, s *goquery.Selection) {
+			res.Headings["h6"]++
+		})
+	})
+
+	c.OnHTML("body", func(e *colly.HTMLElement) {
+		// Goquery selection of the HTMLElement is in e.DOM
+		goquerySelection := e.DOM
+		formTags := goquerySelection.Find("button")
+
+		formTags.Each(func(_ int, s *goquery.Selection) {
+			content := formTags.Text()
+			nameProperty, _ := s.Attr("name")
+
+			if strings.EqualFold(strings.ToLower(content), "sign in") ||
+				strings.EqualFold(strings.ToLower(content), "signin") ||
+				strings.EqualFold(strings.ToLower(content), "sign up") ||
+				strings.EqualFold(strings.ToLower(content), "signup") ||
+				strings.EqualFold(strings.ToLower(nameProperty), "sign in") ||
+				strings.EqualFold(strings.ToLower(nameProperty), "signin") ||
+				strings.EqualFold(strings.ToLower(nameProperty), "sign up") ||
+				strings.EqualFold(strings.ToLower(nameProperty), "signup") {
+				fmt.Printf("*** \n")
+				res.ContainsLoginForm = true
+			}
+
+		})
 
 	})
 

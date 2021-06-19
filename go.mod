@@ -3,7 +3,7 @@ module web-Scraping-test
 go 1.15
 
 require (
-	github.com/PuerkitoBio/goquery v1.7.0 // indirect
+	github.com/PuerkitoBio/goquery v1.7.0
 	github.com/antchfx/htmlquery v1.2.3 // indirect
 	github.com/antchfx/xmlquery v1.3.6 // indirect
 	github.com/gin-contrib/pprof v1.3.0
