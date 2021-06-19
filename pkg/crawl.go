@@ -45,6 +45,16 @@ func Crawl(url string) *dto.DomainResponce {
 		res.Headings["h6"]++
 	})
 
+	// count links
+	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
+		link := e.Request.AbsoluteURL(e.Attr("href"))
+		if link != "" {
+			res.PageInfo.Links[link]++
+			res.ExternalAndInternalLinksAmount++
+		}
+
+	})
+
 	c.Visit(url)
 
 	return res

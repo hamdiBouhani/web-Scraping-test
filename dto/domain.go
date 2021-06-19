@@ -13,19 +13,18 @@ type Domain struct {
 - If a page contains a login form
 */
 
-// type Heading struct {
-// 	Level string `json:"level"`
-// 	Count int64  `json:"count"`
-// }
+type pageInfo struct {
+	Links map[string]int `json:"links"`
+}
 
 type DomainResponce struct {
-	HTMLVersion             string           `json:"html_version"`
-	PageTitle               string           `json:"page_title"`
-	Headings                map[string]int64 `json:"headings"`
-	ExternalLinksAmount     int64            `json:"external_links_amount"`
-	InternalLinksAmount     int64            `json:"internal_links_amount"`
-	InaccessibleLinksAmount int64            `json:"inaccessible_links_amount"`
-	ContainsLoginForm       bool             `json:"contains_login_form"`
+	HTMLVersion                    string           `json:"html_version"`
+	PageTitle                      string           `json:"page_title"`
+	Headings                       map[string]int64 `json:"headings"`
+	ExternalAndInternalLinksAmount int64            `json:"external_internal_links_amount"`
+	InaccessibleLinksAmount        int64            `json:"inaccessible_links_amount"`
+	ContainsLoginForm              bool             `json:"contains_login_form"`
+	PageInfo                       *pageInfo        `json:"page_info"`
 }
 
 func NewDomainResponce() *DomainResponce {
@@ -40,9 +39,11 @@ func NewDomainResponce() *DomainResponce {
 			"h5": 0,
 			"h6": 0,
 		},
-		ExternalLinksAmount:     0,
-		InternalLinksAmount:     0,
-		InaccessibleLinksAmount: 0,
-		ContainsLoginForm:       false,
+		ExternalAndInternalLinksAmount: 0,
+		InaccessibleLinksAmount:        0,
+		ContainsLoginForm:              false,
+		PageInfo: &pageInfo{
+			Links: make(map[string]int),
+		},
 	}
 }

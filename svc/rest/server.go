@@ -49,7 +49,7 @@ func (s *RestServer) Run() error {
 
 	apis := r.Group("/apis")
 	{
-		apis.POST("/visit_urls", s.VisitUrls)
+		apis.POST("/visit_url", s.VisitUrls)
 	}
 
 	err := r.Run(s.c.HostPort)
