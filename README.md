@@ -84,3 +84,35 @@ curl --request POST \
   "success": true
 }
 ```
+
+# project structur
+
+```
+.
+├── cmd
+│   └── web-Scraping-test
+│       └── main.go
+├── dto
+│   └── domain.go
+├── _exemple
+│   ├── colly_basic_exemple.go
+│   └── link_exemple.go
+├── go.mod
+├── go.sum
+├── Makefile
+├── pkg
+│   └── crawl.go
+├── README.md
+└── svc
+    ├── cmd
+    │   └── serve
+    │       └── serve.go
+    ├── configs
+    │   └── configs.go
+    └── rest
+        ├── handlers.go
+        ├── response.go
+        └── server.go
+
+10 directories, 14 files
+```
