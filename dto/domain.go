@@ -1,7 +1,8 @@
 package dto
 
 type Domain struct {
-	URL string `json:"url"`
+	MaxDepth int    `json:"max_depth"`
+	URL      string `json:"url"`
 }
 
 /*

@@ -41,9 +41,16 @@ curl --request POST \
 
 ```
 {
- "url": "http://go-colly.org/"
+ "max_depth": 1,
+ "url": "https://www.google.com/"
 }
 ```
+
+ // MaxDepth limits the recursion depth of visited URLs.
+
+ // Set it to 0 for infinite recursion (default).
+
+ //url ==> visited url
 
 **Output**
 

@@ -15,7 +15,7 @@ func (s *RestServer) VisitUrls(ctx *gin.Context) {
 		return
 	}
 
-	data := pkg.Crawl(s.Log,domain.URL)
+	data := pkg.Crawl(s.Log, domain)
 
 	ResponseData(ctx, data)
 
