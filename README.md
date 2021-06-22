@@ -30,7 +30,8 @@ curl --request POST \
   --url http://localhost:8080/apis/visit_url \
   --header 'content-type: application/json' \
   --data '{
- "url":"http://go-colly.org/"
+ "max_depth": 2,
+ "url": "https://www.google.com/"
 }'
 ```
 
@@ -42,7 +43,7 @@ curl --request POST \
 ```
 {
  "max_depth": 1,
- "url": "https://www.google.com/"
+ "url": "http://go-colly.org/"
 }
 ```
 
@@ -136,14 +137,25 @@ import (
  "github.com/sirupsen/logrus"
 )
 
-func Crawl(Log *logrus.Logger, url string) *dto.DomainResponce {
+func Crawl(Log *logrus.Logger, domain dto.Domain) *dto.DomainResponce {
 
  res := dto.NewDomainResponce()
  c := colly.NewCollector()
 
+ // MaxDepth limits the recursion depth of visited URLs.
+ // Set it to 0 for infinite recursion (default).
+ c.MaxDepth = domain.MaxDepth
  c.Limit(&colly.LimitRule{
   Delay:       1 * time.Second, // Set a delay between requests to these domains
   RandomDelay: 1 * time.Second, // Add an additional random delay
+ })
+
+ c.OnHTML("html", func(e *colly.HTMLElement) {
+  xmlnsProperty := e.Attr("xmlns")
+  if len(xmlnsProperty) > 0 {
+   res.HTMLVersion = "< 5"
+  }
+  res.HTMLVersion = "5"
  })
 
  c.OnHTML("title", func(e *colly.HTMLElement) {
@@ -226,7 +238,7 @@ func Crawl(Log *logrus.Logger, url string) *dto.DomainResponce {
   res.InaccessibleLinksAmount++
  })
 
- c.Visit(url)
+ c.Visit(domain.URL)
 
  return res
 }
